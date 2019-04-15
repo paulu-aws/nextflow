@@ -384,6 +384,7 @@ class AwsBatchTaskHandler extends TaskHandler implements BatchHandler<String,Job
                 .withMemory(1024)
                 .withVcpus(1)
         def awscli = getAwsOptions().cliPath
+        
         if( awscli ) {
             def mountName = 'aws-cli'
             def path = Paths.get(awscli).parent.parent.toString()
@@ -391,13 +392,27 @@ class AwsBatchTaskHandler extends TaskHandler implements BatchHandler<String,Job
                     .withSourceVolume(mountName)
                     .withContainerPath(path)
                     .withReadOnly(true)
-            container.setMountPoints([mount])
+                    
+            def scratchMountName = 'scratchspace'
+            def mount = new MountPoint()
+                    .withSourceVolume(scratchMountName)
+                    .withContainerPath('/tmp')
+                    .withReadOnly(false)         
+                    
+                    
+            container.setMountPoints([mount, scratchMount])
 
             def vol = new Volume()
                     .withName(mountName)
                     .withHost(new Host()
                     .withSourcePath(path))
-            container.setVolumes([vol])
+            
+            def scratchVol = new Volume()
+                    .withName(scratchMountName)
+                    .withHost(new Host()
+                    .withSourcePath('/scratch'))                    
+                    
+            container.setVolumes([vol, scratchVol])
         }
         result.setContainerProperties(container)
 
