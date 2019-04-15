@@ -394,7 +394,7 @@ class AwsBatchTaskHandler extends TaskHandler implements BatchHandler<String,Job
                     .withReadOnly(true)
                     
             def scratchMountName = 'scratchspace'
-            def mount = new MountPoint()
+            def scratchMount = new MountPoint()
                     .withSourceVolume(scratchMountName)
                     .withContainerPath('/tmp')
                     .withReadOnly(false)         
